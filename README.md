@@ -31,7 +31,7 @@ npm install
 npm run start
 ```
 
-浏览器访问 http://localhost:9528
+线上版本可以访问:http://1to2to3.cn/update
 
 ## 发布
 
