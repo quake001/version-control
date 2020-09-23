@@ -1,0 +1,93 @@
+{
+  "versionData": [
+    {
+      "projectId": "小米",
+      "version": "2.0.6",
+      "uri": "http://version-control-1253674864.cos.ap-guangzhou.myqcloud.com/587f6c0a08c94586a49a585003c1f350.rar",
+      "textarea": "灰度测试",
+      "modelOptions": "[\"小米\"]",
+      "systemOptions": "[\"Android\"]",
+      "hotUpdate": false,
+      "hotUri": "",
+      "token": "53cfe4fc-fc7e-4b3c-b8df-6522c3840ec6",
+      "prodControl": false,
+      "grayControl": "false",
+      "id": "小米2.0.6"
+    },
+    {
+      "projectId": "小米",
+      "version": "1.0.9",
+      "uri": "http://version-control-1253674864.cos.ap-guangzhou.myqcloud.com/587f6c0a08c94586a49a585003c1f350.rar",
+      "textarea": "下次",
+      "modelOptions": "[\"小米\"]",
+      "systemOptions": "[\"Android\"]",
+      "hotUpdate": false,
+      "hotUri": "",
+      "token": "53cfe4fc-fc7e-4b3c-b8df-6522c3840ec6",
+      "prodControl": true,
+      "grayControl": "false",
+      "id": "小米1.0.9"
+    }
+  ],
+  "user": [
+    {
+      "username": "admin001",
+      "password": "123456",
+      "access_token": "53cfe4fc-fc7e-4b3c-b8df-6522c3840ec6"
+    }
+  ],
+  "logData": [
+    {
+      "info": "下架了小米项目：1.0.9版本",
+      "id": 1600851113676
+    },
+    {
+      "id": 1600851115771,
+      "info": "发布小米项目：1.0.9版本"
+    },
+    {
+      "info": "下架了小米项目：2.0.6版本",
+      "id": 1600851116740
+    },
+    {
+      "info": "下架了小米项目：1.0.9版本",
+      "id": 1600851117588
+    },
+    {
+      "id": 1600851118496,
+      "info": "发布小米项目：2.0.6版本"
+    },
+    {
+      "id": 1600851120791,
+      "info": "下架了小米项目：2.0.6版本"
+    },
+    {
+      "id": 1600851120879,
+      "info": "发布小米项目：1.0.9版本"
+    }
+  ],
+  "projectData": [
+    {
+      "textarea": "测试文件",
+      "projectId": "小米云技术",
+      "createDate": "1599986819694"
+    },
+    {
+      "textarea": "云办公",
+      "projectId": "夸克应用",
+      "createDate": "1600439952144"
+    },
+    {
+      "projectId": "小米",
+      "textarea": "萨达萨达是",
+      "id": "小米"
+    }
+  ],
+  "downloadsData": [
+    {
+      "lastMonth": "[0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0]",
+      "thisMonth": "[0, 0, 0, 0, 0, 4, 29, 2, 2, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+      "userId": "1000001880070219"
+    }
+  ]
+}
