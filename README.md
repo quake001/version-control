@@ -3,11 +3,12 @@
 # 版本发布管理由福州夸克科技有限公司开发
 
 # 介绍
-采用vue-element-admin后台集成解决方案制作，实现对上传版本，控制线上版本发布灰度版本以及对版本的回滚 可视化操作
+应用版本发布管理平台：前端由vue+element+admin框架实现，后端为Spring Cloud+es+对象存储，针对APP、桌面端软件的版本进行灰度发布控制及管理。
 
 该项目采用json-server生成的数据
 
-假数据都是存在根目录/mock/mockDATA.JSON文件内
+
+模拟数据都是存在根目录/mock/mockDATA.JSON文件内
 
 登录的账号密码也是使用假数据。账号：admin 密码：123456
 
