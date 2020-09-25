@@ -84,7 +84,7 @@ export default {
     },
     // 上架
     prod(val) {
-      this.$emit('grayProd', val)
+      this.$emit('grayProd', val, 'prod')
     }
   }
 }

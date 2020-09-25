@@ -31,14 +31,8 @@ export function queryProject(data) {
 // 删除项目
 export function deleteProject(data) {
   return request({
-    url: '/hbase/deleteByKeyValue',
-    method: 'post',
-    data: {
-      table: 'projects',
-      projectId: data.projectId,
-      createDate: data.createDate,
-      userId: data.userId
-    }
+    url: `/projectData/${data}`,
+    method: 'delete',
   })
 }
 // 添加新增和删除操作信息

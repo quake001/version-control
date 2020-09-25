@@ -13,7 +13,7 @@
       v-show="showDetail?false:true"
       :gray-data="graylist"
       :project-id="projectId"
-      @grayProd="grayProd"
+      @grayProd="release"
       @showDetail="show"
       @offVersion="offVersion"
     />
@@ -47,8 +47,8 @@
                 <el-table-column label="编辑" width="180" align="center">
                   <template slot-scope="scope">
                     <el-button style="margin-bottom: 10px;" type="primary" @click.native.prevent="detail(scope.row)">查看详情</el-button>
-                    <el-button style="margin:0 0 10px 0;" type="primary" @click.native.prevent="prod(scope.row)">发布版本</el-button>
-                    <el-button style="margin:0 0 10px 0;" type="primary" @click.native.prevent="gray(scope.row)">灰度发布</el-button>
+                    <el-button style="margin:0 0 10px 0;" type="primary" @click.native.prevent="release(scope.row,'prod')">发布版本</el-button>
+                    <el-button style="margin:0 0 10px 0;" type="primary" @click.native.prevent="release(scope.row,'gray')">灰度发布</el-button>
                     <el-button style="margin-left:0;" type="danger" @click.native.prevent="del(scope)">删除</el-button>
                   </template>
                 </el-table-column>
@@ -220,210 +220,6 @@ export default {
     offVersion() {
       this.getVersionList()
     },
-    // 发布灰度
-    async gray(val) {
-      const data = {
-        projectId: this.projectId,
-      }
-      const queryVersion = await getversion(data)
-      if (this.grayControl(queryVersion).length !== 0) {
-        this.$confirm('此操作将提交并覆盖灰度版本,是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(async () => {
-            // 1：先把线上灰度版本下架
-            const graylist = this.grayControl(queryVersion)
-            graylist[0].grayControl = false
-            graylist[0].token = this.token
-            await delVersion(graylist[0].id)
-            await addVersion(graylist[0])
-            const offfo = {
-              info: `下架了${graylist[0].projectId}项目：${graylist[0].version}灰度版本`,
-              od: Date.now(),
-            }
-            await addInsertLog(offfo)
-            // 2：发布灰度版本
-            val.grayControl = true
-            val.token = this.token
-            await delVersion(val.id)
-            await addVersion(val)
-            this.$message({
-              message: '发布成功',
-              type: 'success',
-            })
-            const logInfo = {
-              info: `发布${val.projectId}项目：${val.version}灰度版本`,
-              id:Date.now()
-            }
-            await addInsertLog(logInfo)
-            this.getVersionList()
-          })
-          .catch(() => {
-            this.$message({
-              type: 'success',
-              message: '已取消发布',
-            })
-          })
-      } else {
-        val.grayControl = true
-        val.token = this.token
-        await delVersion(val.id)
-        await addVersion(val)
-        this.$message({
-          message: '发布成功',
-          type: 'success',
-        })
-        const logInfo = {
-          info: `发布${val.projectId}项目：${val.version}灰度版本`,
-          id:Date.now()
-        }
-        await addInsertLog(logInfo)
-        this.getVersionList()
-      }
-    },
-    // 将灰度版本发布至线上版本
-    async grayProd(val) {
-      const data = {
-        projectId: this.projectId,
-      }
-      const queryVersion = await getversion(data)
-      if (this.prodControl(queryVersion).length !== 0) {
-        this.$confirm('此操作将提交并覆盖线上版本,是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(async () => {
-            // 1：先把存在的线上版本下架
-            const prodlist = this.prodControl(queryVersion)
-            prodlist[0].prodControl = false
-            prodlist[0].token = this.token
-            await delVersion(prodlist[0].id)
-            await addVersion(prodlist[0])
-            const offfo = {
-              info: `下架了${prodlist[0].projectId}项目：${prodlist[0].version}版本`,
-              id:Date.now()
-            }
-            await addInsertLog(offfo)
-            // 2：把当前灰度版本下架然后发布版本
-            val.prodControl = true
-            val.grayControl = false
-            val.token = this.token
-            await delVersion(val.id)
-            await addVersion(val)
-            this.$message({
-              message: '上架成功',
-              type: 'success',
-            })
-            const off = {
-              info: `下架了${val.projectId}项目：${val.version}灰度版本`,
-              id:Date.now()
-            }
-            await addInsertLog(off)
-            const logInfo = {
-              info: `发布${val.projectId}项目：${val.version}版本`,
-              id:Date.now()
-            }
-            await addInsertLog(logInfo)
-            this.getVersionList()
-          })
-          .catch(() => {
-            this.$message({
-              type: 'success',
-              message: '已取消发布',
-            })
-          })
-      } else {
-        // 1:把当前灰度版本下架并且发布正式版本
-        val.grayControl = false
-        val.prodControl = true
-        val.token = this.token
-        await delVersion(val.id)
-        await addVersion(val)
-        this.$message({
-          message: '下架成功',
-          type: 'success',
-        })
-        const off = {
-          info: `下架了${val.projectId}项目：${val.version}灰度版本`,
-          id:Date.now()
-        }
-        await addInsertLog(off)
-        const logInfo = {
-          info: `发布${val.projectId}项目：${val.version}版本`,
-          id:Date.now()
-        }
-        await addInsertLog(logInfo)
-        this.getVersionList()
-      }
-    },
-    // 发布版本
-    async prod(val) {
-      const data = {
-        projectId: this.projectId,
-      }
-      const queryVersion = await getversion(data)
-      if (this.prodControl(queryVersion).length !== 0) {
-        this.$confirm('此操作将提交并覆盖线上版本,是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(async () => {
-            // 1：先把线上版本下架
-            const prodlist = this.prodControl(queryVersion)
-            console.log(prodlist)
-            prodlist[0].prodControl = false
-            prodlist[0].token = this.token
-            await delVersion(prodlist[0].id)
-            await addVersion(prodlist[0])
-            const offfo = {
-              id: Date.now(),
-              info: `下架了${prodlist[0].projectId}项目：${prodlist[0].version}版本`,
-            }
-            await addInsertLog(offfo)
-            // 2：发布版本
-            await delVersion(val.id)
-            val.prodControl = true
-            val.token = this.token
-            console.log(val)
-            let a = await addVersion(val)
-            this.$message({
-              message: '成功',
-              type: 'success',
-            })
-            const logInfo = {
-              id: Date.now(),
-              info: `发布${val.projectId}项目：${val.version}版本`,
-            }
-            await addInsertLog(logInfo)
-            this.getVersionList()
-          })
-          .catch(() => {
-            this.$message({
-              type: 'success',
-              message: '已取消发布',
-            })
-          })
-      } else {
-        await delVersion(val.id)
-        val.prodControl = true
-        val.token = this.token
-        await addVersion(val)
-        this.$message({
-          message: '成功',
-          type: 'success',
-        })
-        const logInfo = {
-          id: Date.now(),
-          info: `发布${val.projectId}项目：${val.version}版本`,
-        }
-        await addInsertLog(logInfo)
-        this.getVersionList()
-      }
-    },
     // 获取该项目的版本号
     async getVersionList() {
       const data = {
@@ -467,6 +263,72 @@ export default {
         return val.projectId === this.projectId && JSON.parse(val.grayControl) === true
       })
     },
+    // 控制发布灰度版本、发布灰度上线版本以及发布线上版本的封装函数
+    async release(val, type) {
+      if (type === 'gray') {
+        val.grayControl = true
+        val.prodControl = false
+      } else if (type === 'prod') {
+        val.prodControl = true
+        val.grayControl = false
+      }
+      const data = {
+        projectId: this.projectId
+      }
+      const queryVersion = await getversion(data)
+      var list
+      // 1：先把线上huo灰度版本下架
+      if (type === 'gray') {
+        list = this.grayControl(queryVersion)
+      } else if (type === 'prod') {
+        list = this.prodControl(queryVersion)
+      }
+      if (list.length !== 0) {
+        this.$confirm(`此操作将提交并覆盖${type === 'gray' ? '灰度' : '线上'}版本,是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(async () => {
+            list[0].grayControl = false
+            list[0].prodControl = false
+            await delVersion(list[0].id)
+            await addVersion(list[0])
+            // 2：发布灰度版本
+            await delVersion(val.id)
+            await addVersion(val)
+            this.$message({
+              message: '发布成功',
+              type: 'success'
+            })
+            const logInfo = {
+              info: `发布${val.projectId}项目：${val.version}${type === 'gray' ? '灰度' : ''}版本`,
+              id:Date.now()
+            }
+            await addInsertLog(logInfo)
+            this.getVersionList()
+          })
+          .catch(() => {
+            this.$message({
+              type: 'success',
+              message: '已取消发布'
+            })
+          })
+      } else {
+        await delVersion(val.id)
+        await addVersion(val)
+        this.$message({
+          message: '发布成功',
+          type: 'success'
+        })
+        const logInfo = {
+          info: `发布${val.projectId}项目：${val.version}${type === 'gray' ? '灰度' : ''}版本`,
+          userId: this.userId
+        }
+        await addInsertLog(logInfo)
+        this.getVersionList()
+      }
+    }
   },
 }
 </script>

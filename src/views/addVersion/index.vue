@@ -3,11 +3,11 @@
     <el-row :gutter="12">
       <el-col :sm="{span: 16, offset: 4}" :xs="{span: 22, offset: 1}">
         <el-card shadow="hover">
-          <el-form ref="form" :model="form" label-width="120px" label-position="top">
-            <el-form-item label="项目名">
+          <el-form ref="form" :rules="rules" :model="form" label-width="120px" label-position="top">
+            <el-form-item label="项目名" prop="projectId">
               <el-input ref="focus" v-model="form.projectId" placeholder="请输入项目名" clearable readonly disabled />
             </el-form-item>
-            <el-form-item label="版本号">
+            <el-form-item label="版本号" prop="version">
               <el-input ref="version" v-model="form.version" placeholder="请输入版本号" clearable :disabled="editControl===null?false:true" />
             </el-form-item>
             <el-form-item label="上传文件">
@@ -26,16 +26,16 @@
                 <el-button style="width:100%" type="primary">点击上传</el-button>
               </el-upload>
             </el-form-item>
-            <el-form-item label="下载路径">
+            <el-form-item label="下载路径" prop="uri">
               <el-input v-model="form.uri" readonly disabled />
             </el-form-item>
-            <el-form-item label="介绍">
+            <el-form-item label="介绍" prop="textarea">
               <el-input v-model="form.textarea" maxlength="200" show-word-limit type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" />
             </el-form-item>
-            <el-form-item label="版本适配">
+            <el-form-item label="版本适配" prop="modelOptions">
               <adaptation :options="ModelOptions" :edit-options="form.modelOptions" @getOptions="getModelOptions" />
             </el-form-item>
-            <el-form-item label="系统适配">
+            <el-form-item label="系统适配" prop="systemOptions">
               <adaptation :options="systemOptions" :edit-options="form.systemOptions" @getOptions="getSystemOptions" />
             </el-form-item>
             <el-form-item label="是否支持热更新">
@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import validate from '@/commonent/validate.js'
 import { addVersion, delKeys, delVersion, getversion, getversionById } from '@/api/table'
 import { addInsertLog } from '@/api/log'
 import { mapGetters } from 'vuex'
@@ -113,6 +114,7 @@ export default {
       ModelOptions: ['苹果', '魅族', '小米', 'OPPO', '三星', '华为', 'VIVO', '1+', '其他'],
       systemOptions: ['IOS', 'Android'],
       editControl: null,
+      rules: validate
     }
   },
   computed: {
@@ -144,56 +146,31 @@ export default {
     },
     // 点击提交按钮
     async onSubmit() {
-      const reg = /^([1-9]\d|[1-9])(\.([1-9]\d|\d)){2}$/
       if (this.token !== '') {
-        if (this.form.projectId === '') {
-          this.$message({
-            message: '项目ID不得为空',
-            type: 'error',
-          })
-        } else if (this.form.version === '') {
-          this.$message({
-            message: '版本号不得为空',
-            type: 'error',
-          })
-        } else if (this.form.version.match(reg) === null) {
-          this.$message({
-            message: '请输入正确的版本号',
-            type: 'error',
-          })
-        } else if (this.form.uri === '') {
-          this.$message({
-            message: '下载路径不得为空',
-            type: 'error',
-          })
-        } else if (this.form.modelOptions.length === 0) {
-          this.$message({
-            message: '适配机型不得为空',
-            type: 'error',
-          })
-        } else if (this.form.systemOptions.length === 0) {
-          this.$message({
-            message: '适配系统不得为空',
-            type: 'error',
-          })
-        } else if (this.form.hotUpdate === true) {
-          console.log('支持热更新')
-          if (this.form.hotUri === '') {
-            this.$message({
-              message: '热更新下载路径不得为空',
-              type: 'error',
-            })
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            if (this.form.hotUpdate === true) {
+              if (this.form.hotUri === '') {
+                this.$message({
+                  message: '热更新下载路径不得为空',
+                  type: 'error'
+                })
+              } else {
+                this.refer()
+              }
+            } else {
+              this.refer()
+            }
           } else {
-            this.refer()
+            return false
           }
-        } else {
-          this.refer()
-        }
+        })
       } else {
         this.$message({
           message: '身份过期,请重新登录',
-          type: 'error',
+          type: 'error'
         })
+        this.$route.push('/login')
         this.clearForm()
       }
     },

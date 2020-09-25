@@ -105,8 +105,7 @@ export default {
           console.log(queryRes)
           if (queryRes.length === 0 || this.DuplicateName(queryRes, row.projectId)) {
             delData.createDate = row.createDate
-            const a = await deleteProject(delData)
-            if (a.code === 200) {
+            await deleteProject(delData.id)
               this.$message({
                 message: `成功删除项目${row.projectId}`,
                 type: 'success',
@@ -119,7 +118,6 @@ export default {
                 userId: this.userId,
               }
               await addInsertLog(logInfo)
-            }
           } else {
             this.$message({
               message: '该项目中有版本存在，无法直接删除',
